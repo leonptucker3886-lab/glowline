@@ -78,6 +78,13 @@ nav a{margin:0;padding:8px 12px;border-radius:999px;border:1px solid #ffffff1f;f
 @media(min-width:720px){header{padding:18px 5vw}.logo{font-size:1.6rem}.doors{gap:0;padding:0}.doors .door{min-height:70vh;border-radius:0;padding:6vh 4vw}.bgrid{gap:16px}}
 @media(hover:hover){.gc .play{display:grid}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.door{overflow:hidden}.door>*:not(.fan){position:relative;z-index:2}
+.fan{position:absolute;left:50%;top:50%;width:0;height:0;z-index:0;pointer-events:none}
+.fan i{position:absolute;width:clamp(70px,11vw,150px);aspect-ratio:5/7;left:calc(clamp(70px,11vw,150px)/-2);top:calc(clamp(70px,11vw,150px)*-.7);border-radius:12px;background-size:cover;background-position:center;border:2px solid rgba(255,255,255,.25);box-shadow:0 10px 30px rgba(0,0,0,.6);opacity:.4;transform-origin:50% 120%;transition:transform .35s,opacity .35s}
+.fan i:nth-child(1){transform:rotate(-24deg) translateY(-8%)}.fan i:nth-child(2){transform:rotate(-8deg) translateY(-14%)}.fan i:nth-child(3){transform:rotate(8deg) translateY(-14%)}.fan i:nth-child(4){transform:rotate(24deg) translateY(-8%)}
+.door:hover .fan i{opacity:.6}.door:hover .fan i:nth-child(1){transform:rotate(-32deg) translateY(-10%)}.door:hover .fan i:nth-child(4){transform:rotate(32deg) translateY(-10%)}
+.casino .fan i{display:flex;align-items:center;justify-content:center;font:900 clamp(.7rem,1.4vw,1.1rem)/1.1 system-ui;color:#fff;text-align:center;text-shadow:0 0 10px var(--glow);border-color:var(--glow)}
+.door:before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,rgba(7,6,15,.55),rgba(7,6,15,.2) 70%);pointer-events:none}
 </style>
 </head>
 <body>
@@ -92,13 +99,13 @@ nav a{margin:0;padding:8px 12px;border-radius:999px;border:1px solid #ffffff1f;f
   <p>One login. One Glow balance. Casino and arcade under the same neon.</p>
 </section>
 <section class="doors">
-  <a class="door casino" href="https://afterglow.leonlink.net">
+  <a class="door casino" href="https://afterglow.leonlink.net"><div class="fan" aria-hidden="true"><i style="background:linear-gradient(160deg,#ff3df2,#2a0b45)">NEON<br>SLOTS</i><i style="background:linear-gradient(160deg,#ffb347,#c2185b)">SUN N<br>FUN</i><i style="background:linear-gradient(160deg,#ffd76a,#1a237e)">ZEUS</i><i style="background:linear-gradient(160deg,#22e6ff,#3a0e3a)">MINES</i></div>
     <div class="tag">Casino floor</div>
     <h2>Casino</h2>
     <ul><li>Slots: Neon, Sun n Fun, Zeus and more</li><li>Table games and mines</li><li>Glow store and wallet</li></ul>
     <span class="btn">Enter the casino</span>
   </a>
-  <a class="door arcade" href="https://arcadeline.leonlink.net">
+  <a class="door arcade" href="https://arcadeline.leonlink.net"><div class="fan" aria-hidden="true"><i style="background-image:url(https://www.leonlink.net/img/cards/dominion.jpg)"></i><i style="background-image:url(https://www.leonlink.net/img/cards/knockoutqueens.jpg)"></i><i style="background-image:url(https://www.leonlink.net/img/cards/paperroute.jpg)"></i><i style="background-image:url(https://www.leonlink.net/img/cards/underrun.jpg)"></i></div>
     <div class="tag">Arcade</div>
     <h2>Arcade</h2>
     <ul><li>Skill and arcade games</li><li>Your player dashboard</li><li>Leaderboards and progress</li></ul>
