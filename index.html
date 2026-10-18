@@ -12,9 +12,10 @@ main{padding:22px}iframe{width:100%;height:calc(100vh - 170px);border:0;border-r
 </style></head><body>
 <header><div class="logo">GLOWLINE</div><div class="wallet">✦ <span id="glow">—</span> Glow</div></header>
 <nav><button id="t-casino" class="on" onclick="go('casino')">Casino</button><button id="t-arcade" onclick="go('arcade')">Arcade</button><button id="t-lb" onclick="go('lb')">Leaderboards</button></nav>
-<main><iframe id="f" title="Glowline game"></iframe></main>
+<main><iframe id="f" title="Glowline game"></iframe><div id="card" style="display:none;text-align:center;padding:60px 20px;border:1px solid #ffffff22;border-radius:16px;background:#ffffff08"><h2 style="margin:0 0 8px">Glowline Casino</h2><p style="color:var(--mut)">25+ slots, table and instant games. Play money only.</p><a href="https://afterglow.leonlink.net/" style="display:inline-block;margin-top:14px;padding:14px 28px;border-radius:999px;background:linear-gradient(90deg,var(--a),var(--b));color:#07060f;font-weight:800;text-decoration:none">Enter the Casino</a></div></main>
 <script>
 const SRC={casino:'https://afterglow.leonlink.net/',arcade:'https://arcadeline.leonlink.net/',lb:'https://arcadeline.leonlink.net/#leaderboard'};
-function go(t){document.getElementById('f').src=SRC[t];for(const k in SRC)document.getElementById('t-'+k).classList.toggle('on',k===t);location.hash=t}
+const NOFRAME={casino:1};
+function go(t){const f=document.getElementById('f'),c=document.getElementById('card');if(NOFRAME[t]){f.style.display='none';f.removeAttribute('src');c.style.display='block'}else{c.style.display='none';f.style.display='block';f.src=SRC[t]}for(const k in SRC)document.getElementById('t-'+k).classList.toggle('on',k===t);location.hash=t}
 go((location.hash||'#casino').slice(1) in SRC?(location.hash||'#casino').slice(1):'casino');
 </script></body></html>
