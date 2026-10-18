@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Torcs &amp; Thrones — Gaul, 58 BC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;overflow:hidden;color:#f3ead7;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(ellipse at 30% 10%,#2a1640 0%,#0b0d1a 55%,#030408 100%)}
+#wrap{position:fixed;inset:0;display:flex;flex-direction:column}
+#hud{display:flex;gap:6px;padding:calc(env(safe-area-inset-top) + 6px) 8px 6px;background:linear-gradient(#000a,#0000);z-index:3;font-size:13px;flex-wrap:wrap}
+.chip{background:#ffffff12;border:1px solid #ffffff22;border-radius:999px;padding:4px 10px;white-space:nowrap}
+#mapbox{flex:1;position:relative;overflow:hidden}
+canvas#map{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.float{position:absolute;font-weight:900;font-size:20px;text-shadow:0 0 8px #000,0 0 14px currentColor;animation:fl 1.2s ease-out forwards}
+@keyframes fl{from{transform:translate(-50%,0) scale(.6);opacity:0}15%{transform:translate(-50%,-10px) scale(1.25);opacity:1}to{transform:translate(-50%,-60px);opacity:0}}
+#bar{display:flex;gap:6px;padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);background:linear-gradient(#0000,#000c);z-index:3}
+button{font:inherit;color:#fff;border:0;border-radius:14px;padding:12px 10px;font-weight:700;background:linear-gradient(135deg,#6b3fd6,#c2410c);box-shadow:0 0 18px #c2410c55,inset 0 1px 0 #fff3;cursor:pointer;transition:transform .12s}
+button:active{transform:scale(.94)}button:disabled{filter:grayscale(1) brightness(.6)}
+#bar button{flex:1;font-size:13px}
+.ghost{background:#ffffff14;box-shadow:none;border:1px solid #ffffff2a}
+#info{position:absolute;left:8px;right:8px;bottom:8px;background:#0d0f1ccc;border:1px solid #ffffff22;border-radius:16px;padding:10px 12px;backdrop-filter:blur(10px);font-size:13px;transition:transform .3s,opacity .3s;z-index:2}
+#info.hide{transform:translateY(130%);opacity:0}
+#info button{padding:8px 12px;font-size:12px;margin-top:6px}
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;background:radial-gradient(ellipse at 50% 0%,#3b1d5c,#0a0b16 60%,#020205);transition:opacity .45s,transform .45s;overflow-y:auto}
+.screen.off{opacity:0;pointer-events:none;transform:scale(1.04)}
+h1{font-family:Georgia,serif;font-size:clamp(34px,10vw,64px);background:linear-gradient(90deg,#fbbf24,#f97316,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px #f9731688)}
+h2{font-family:Georgia,serif;font-size:24px;margin-bottom:8px;color:#fbbf24}
+.sub{opacity:.8;margin:6px 0 22px;font-size:14px;max-width:420px}
+.col{display:flex;flex-direction:column;gap:10px;width:min(340px,100%)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(460px,100%)}
+.card{background:linear-gradient(160deg,#ffffff14,#ffffff05);border:1px solid #ffffff22;border-radius:18px;padding:12px;text-align:left;font-size:12px}
+.card:active{transform:scale(.96)}.card b{font-size:15px;display:block}
+.emo{font-size:34px;filter:drop-shadow(0 0 10px #fff6)}
+.modal{position:fixed;inset:0;z-index:8;background:#0008;display:flex;align-items:flex-end;justify-content:center;transition:opacity .3s}
+.modal.off{opacity:0;pointer-events:none}
+.sheet{width:min(520px,100%);max-height:80vh;overflow-y:auto;background:linear-gradient(#1a1430,#0c0d18);border:1px solid #ffffff22;border-radius:22px 22px 0 0;padding:16px 14px calc(env(safe-area-inset-bottom) + 16px);animation:up .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes up{from{transform:translateY(100%)}}
+.row{display:flex;align-items:center;gap:8px;padding:9px 4px;border-bottom:1px solid #ffffff12;font-size:13px;text-align:left}
+.row .grow{flex:1}.row button{padding:8px 9px;font-size:11px;border-radius:10px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+#bgfx{position:fixed;inset:0;pointer-events:none;z-index:9}
+.shake{animation:sh .35s}
+@keyframes sh{20%{transform:translate(-7px,4px)}40%{transform:translate(6px,-5px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(3px,4px)}}
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:20;background:#140f24ee;border:1px solid #fbbf2466;border-radius:14px;padding:10px 14px;font-size:13px;max-width:92vw;box-shadow:0 0 24px #fbbf2444;animation:tin .4s,tout .5s 3.2s forwards}
+#yb{position:fixed;left:0;right:0;top:38%;text-align:center;font-family:Georgia,serif;font-size:clamp(40px,14vw,90px);font-weight:900;z-index:7;pointer-events:none;background:linear-gradient(90deg,#fbbf24,#f97316,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px #f97316);animation:yb 1.6s ease-out forwards}
+@keyframes yb{from{opacity:0;transform:scale(1.6);letter-spacing:20px}25%{opacity:1;transform:scale(1);letter-spacing:2px}75%{opacity:1}to{opacity:0;transform:scale(.9)}}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#000a 100%);z-index:1}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-20px)}}@keyframes tout{to{opacity:0}}
+</style></head><body>
+<canvas id="bgfx"></canvas>
+<div id="wrap">
+ <div id="hud"><span class="chip" id="hYear"></span><span class="chip" id="hGold"></span><span class="chip" id="hProv"></span><span class="chip" id="hRuler"></span><span class="chip" id="hMute" style="margin-left:auto;cursor:pointer" onclick="toggleMute()">🔊</span><span class="chip" style="cursor:pointer" onclick="quitToMenu()">☰</span></div>
+ <div id="mapbox"><canvas id="map"></canvas><div id="vig"></div><div id="fx"></div><div id="info" class="hide"></div></div>
+ <div id="bar"><button class="ghost" id="bDyn">👑 Dynasty</button><button class="ghost" id="bDip">🤝 Diplomacy</button><button id="bEnd">⏳ End Year</button></div>
+</div>
+<div class="screen" id="sMenu"><div class="emo" style="font-size:60px">🛡️</div><h1>Torcs &amp; Thrones</h1><p class="sub">Gaul, 58 BC. The tribes are divided and Rome is watching from the south. Unite the land, keep your bloodline alive, and outlast the legions.</p>
+ <div class="col"><button id="mCont" style="display:none" onclick="continueGame()">▶️ Continue Campaign</button><button onclick="openPick()">⚔️ New Campaign</button><button class="ghost" onclick="openShop()">✨ Legacy Shop</button><button class="ghost" onclick="show('sHow')">📜 How to Play</button><div class="chip" id="mHigh" style="margin-top:8px"></div></div></div>
+<div class="screen off" id="sPick"><h2>Choose your chieftain</h2><p class="sub">Each one really led a tribe around 58 BC.</p><div class="cards" id="pickCards"></div><button class="ghost" style="margin-top:14px" onclick="show('sMenu')">← Back</button></div>
+<div class="screen off" id="sShop"><h2>✨ Legacy Shop</h2><p class="sub">Every dynasty that falls leaves legacy points. Spend them on permanent bonuses.</p><div class="chip" id="shopPts" style="margin-bottom:12px"></div><div class="col" id="shopList"></div><button class="ghost" style="margin-top:14px" onclick="show('sMenu')">← Back</button></div>
+<div class="screen off" id="sHow"><h2>📜 How to Play</h2><div class="sub" style="text-align:left;line-height:1.6">
+1. <b>Tap one of your lands</b>, then <b>tap a glowing neighbour</b> to attack it.<br>
+2. With your land selected, tap <b>Recruit</b> to buy warriors with gold.<br>
+3. <b>End Year</b> to collect gold, grow armies and let rivals move.<br>
+4. <b>Diplomacy:</b> gifts, alliances and marriages. Allies won't attack you.<br>
+5. <b>Dynasty:</b> rulers age and die. Marry to have heirs. No heir means game over.<br>
+6. Rome gets stronger every year. Survive, expand and score high. Hold every land to win.</div><button onclick="show('sMenu')">Got it</button></div>
+<div class="screen off" id="sOver"><div class="emo" style="font-size:56px" id="oEmo">💀</div><h1 id="oTitle">Dynasty Fallen</h1><p class="sub" id="oText"></p><div class="chip" id="oScore" style="font-size:18px;margin-bottom:8px"></div><div class="chip" id="oLeg" style="margin-bottom:18px"></div><div class="col"><button onclick="openPick()">⚔️ Play again</button><button class="ghost" onclick="openShop()">✨ Legacy Shop</button><button class="ghost" onclick="show('sMenu')">Main menu</button></div></div>
+<div class="modal off" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.random()*(b-a), RI=(a,b)=>Math.floor(R(a,b+1)), pick=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function toast(t){const d=document.createElement('div');d.className='toast';d.innerHTML=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3800);}
+function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('off',s.id!==id);}
+function hideScreens(){for(const s of document.querySelectorAll('.screen'))s.classList.add('off');}
+function openModal(h){$('sheet').innerHTML=h;$('modal').classList.remove('off');}
+function closeModal(){$('modal').classList.add('off');}
+// ---------- Save ----------
+const SAVE_KEY='torcs_save_v1';
+let META=JSON.parse(localStorage.getItem(SAVE_KEY)||'null')||{legacy:0,high:0,up:{gold:0,war:0,fert:0,diplo:0,health:0}};
+function saveMeta(){localStorage.setItem(SAVE_KEY,JSON.stringify(META));}
+const UPGRADES=[
+ {k:'gold',n:'💰 Hoard of the Ancestors',d:'+40 starting gold per level',max:5},
+ {k:'war',n:'⚔️ Iron of the Smiths',d:'+8% battle strength per level',max:5},
+ {k:'fert',n:'👶 Blessing of the Mother',d:'+8% chance of children per level',max:4},
+ {k:'diplo',n:'🕊️ Silver Tongue',d:'+10 relations with everyone at start',max:4},
+ {k:'health',n:'🌿 Druid Herbs',d:'Rulers live longer',max:4}];
+const upCost=l=>15+l*15;
+// ---------- Audio (Web Audio synth) ----------
+let AC=null,MASTER=null;const OUT=()=>{if(!MASTER){MASTER=AC.createGain();MASTER.gain.value=(typeof MUTED!=='undefined'&&MUTED)?0:1;MASTER.connect(AC.destination);}return MASTER;};
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function tone(f,d=.15,type='square',vol=.08,slide=0,delay=0){const c=ac();if(!c)return;const t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f+slide),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(OUT());o.start(t);o.stop(t+d+.02);}
+function noise(d=.25,vol=.15){const c=ac();if(!c)return;const b=c.createBuffer(1,c.sampleRate*d,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=(Math.random()*2-1)*(1-i/a.length);const s=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=900;s.buffer=b;g.gain.value=vol;s.connect(f).connect(g).connect(OUT());s.start();}
+const SFX={
+ tap:()=>tone(660,.06,'triangle',.05),
+ sel:()=>{tone(440,.08,'triangle',.06);tone(660,.1,'triangle',.05,0,.06);},
+ hit:()=>{noise(.3,.25);tone(120,.25,'sawtooth',.1,-70);},
+ win:()=>{[523,659,784,1046].forEach((f,i)=>tone(f,.18,'square',.06,0,i*.09));},
+ lose:()=>{[392,330,262].forEach((f,i)=>tone(f,.25,'sawtooth',.06,0,i*.13));},
+ coin:()=>{tone(988,.07,'square',.05);tone(1319,.12,'square',.05,0,.07);},
+ horn:()=>{tone(147,.6,'sawtooth',.07,20);tone(220,.6,'sawtooth',.05,30);},
+ bell:()=>{tone(880,.8,'sine',.08);tone(1320,.6,'sine',.04);}};
+// ---------- World data (Gaul, 58 BC) ----------
+const PROV=[
+ {n:'Britannia',x:.17,y:.07,f:'catu',e:'🏝️'},{n:'Armorica',x:.11,y:.33,f:'veneti',e:'⛵'},
+ {n:'Belgica',x:.43,y:.26,f:'belgae',e:'🌾'},{n:'Ardenna',x:.60,y:.14,f:'eburones',e:'🌲'},
+ {n:'Treveria',x:.68,y:.29,f:'treveri',e:'🐎'},{n:'Germania',x:.88,y:.20,f:'suebi',e:'🐺'},
+ {n:'Carnutia',x:.33,y:.37,f:'carnutes',e:'🌳'},{n:'Sequania',x:.67,y:.45,f:'sequani',e:'🏞️'},
+ {n:'Bibracte',x:.49,y:.48,f:'aedui',e:'🏯'},{n:'Helvetia',x:.87,y:.46,f:'helvetii',e:'⛰️'},
+ {n:'Pictonia',x:.18,y:.54,f:'pictones',e:'🐟'},{n:'Gergovia',x:.41,y:.64,f:'arverni',e:'🌋'},
+ {n:'Aquitania',x:.17,y:.77,f:'aquitani',e:'🍇'},{n:'Allobrogia',x:.67,y:.64,f:'rome',e:'🏛️'},
+ {n:'Narbo',x:.44,y:.86,f:'rome',e:'🏛️'},{n:'Cisalpina',x:.89,y:.75,f:'rome',e:'🦅'}];
+const EXTRA_ADJ=[[0,2],[0,1]]; // sea crossings from Britannia
+const FAC={
+ arverni:{n:'Arverni',c:'#f97316',r:'Vercingetorix',age:24,m:4,d:2,play:1,blurb:'Young, fierce and ambitious. Strong in battle.'},
+ helvetii:{n:'Helvetii',c:'#22d3ee',r:'Orgetorix',age:50,m:2,d:4,play:1,blurb:'A rich, scheming noble. Gifted at diplomacy.'},
+ eburones:{n:'Eburones',c:'#a3e635',r:'Ambiorix',age:35,m:3,d:3,play:1,blurb:'A cunning forest king. Good at everything.'},
+ suebi:{n:'Suebi',c:'#e879f9',r:'Ariovistus',age:45,m:5,d:1,play:1,blurb:'A Germanic warlord. Brutal, feared, few friends.'},
+ aedui:{n:'Aedui',c:'#facc15',r:'Diviciacus',age:48,m:2,d:4},
+ sequani:{n:'Sequani',c:'#60a5fa',r:'Casticus',age:40,m:3,d:2},
+ belgae:{n:'Belgae',c:'#fb7185',r:'Galba',age:38,m:4,d:2},
+ treveri:{n:'Treveri',c:'#2dd4bf',r:'Indutiomarus',age:42,m:3,d:2},
+ carnutes:{n:'Carnutes',c:'#4ade80',r:'Tasgetius',age:36,m:2,d:3},
+ veneti:{n:'Veneti',c:'#818cf8',r:'Viridovix',age:39,m:3,d:2},
+ pictones:{n:'Pictones',c:'#fdba74',r:'Duratius',age:44,m:2,d:3},
+ aquitani:{n:'Aquitani',c:'#c084fc',r:'Adiatuanus',age:41,m:3,d:2},
+ catu:{n:'Catuvellauni',c:'#94a3b8',r:'Cassivellaunus',age:37,m:3,d:2},
+ rome:{n:'Rome',c:'#dc2626',r:'Julius Caesar',age:42,m:6,d:3}};
+const NAMES_M=['Dumnorix','Lugotorix','Brennus','Cingetorix','Vergasillaunus','Epasnactus','Comm','Litaviccus','Segovax','Taximagulus','Lucterius','Drappes','Cotus','Celtillus','Bellovesus'];
+const NAMES_F=['Onomaris','Brigantia','Epona','Sabina','Rhiannon','Camma','Nantosvelta','Arduinna','Damona','Sirona','Bodicca'];
+const TRAITS=[['Brave','⚔️',{m:1}],['Wise','🦉',{d:1}],['Strong','💪',{m:1}],['Charming','🌹',{d:1}],['Sickly','🤒',{h:-1}],['Hale','🍀',{h:1}],['Cruel','🗡️',{m:1,d:-1}],['Generous','🎁',{d:1}],['Craven','🐔',{m:-1}],['Druid-taught','🌿',{d:1,h:1}]];
+// ---------- Map raster ----------
+const GW=200,GH=250; let LANDIDX=null,SHADE=null,ADJ=[],offc=null;
+function buildRaster(){
+ LANDIDX=new Int16Array(GW*GH).fill(-1);SHADE=new Float32Array(GW*GH);
+ const ph=[R(0,6),R(0,6),R(0,6)];
+ for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
+  const x=i/GW,y=j/GH;let best=-1,bd=9;
+  for(let k=0;k<PROV.length;k++){const dx=x-PROV[k].x,dy=(y-PROV[k].y)*1.25;const d=dx*dx+dy*dy;if(d<bd){bd=d;best=k;}}
+  const fb=k=>Math.sin(x*k*1.3+ph[0])*Math.cos(y*k+ph[1]);
+  const wob=fb(9)*.03+fb(17)*.018+fb(37)*.009+fb(71)*.004;
+  const edge=Math.min(x,1-x,y,1-y);
+  let land=edge>.035+wob;
+  const ch=.19+.07*(x-.2),north=x<.47+wob*2+(ch-y)*.8&&y<ch;
+  if(x<.5&&Math.abs(y-ch)<.028+wob*.6)land=false; // the Channel
+  if(north&&Math.hypot(x-.17,(y-.08)*1.3)>.16+wob)land=false; // shape Britannia
+  if(y>.4&&y<.76&&x<.04+.07*Math.sin((y-.4)/.36*Math.PI)+wob)land=false; // Bay of Biscay
+  if(y>.9+.035*Math.sin(x*11+ph[2])+wob)land=false; // the Mediterranean
+  if(y>.8+9*(x-.56)**2+wob)land=false; // Gulf of Lion
+  if(land)LANDIDX[j*GW+i]=north?0:(best===0?2:best);
+  SHADE[j*GW+i]=.86+.14*Math.sin(x*60+Math.sin(y*40)*2)*Math.cos(y*55);}
+ const set=PROV.map(()=>new Set());
+ for(let j=0;j<GH-1;j++)for(let i=0;i<GW-1;i++){const a=LANDIDX[j*GW+i];if(a<0)continue;
+  for(const b of [LANDIDX[j*GW+i+1],LANDIDX[(j+1)*GW+i]])if(b>=0&&b!==a){set[a].add(b);set[b].add(a);}}
+ for(const[a,b]of EXTRA_ADJ){set[a].add(b);set[b].add(a);}
+ ADJ=set.map(s=>[...s]);
+ offc=document.createElement('canvas');offc.width=GW;offc.height=GH;}
+function hex2rgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function paintRaster(){
+ const ctx=offc.getContext('2d'),im=ctx.createImageData(GW,GH),d=im.data;
+ const cols=PROV.map((p,k)=>hex2rgb(FAC[G.owner[k]].c));
+ for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i,o=k*4,p=LANDIDX[k];
+  if(p<0){const w=.5+.5*Math.sin(i*.31+j*.17);d[o]=6;d[o+1]=18+w*12;d[o+2]=42+w*20;d[o+3]=255;continue;}
+  const c=cols[p],s=SHADE[k];let m=.55*s;
+  const r=i+1<GW?LANDIDX[k+1]:-1,b=j+1<GH?LANDIDX[k+GW]:-1;
+  const edge=(r!==p)||(b!==p);
+  if(edge){const other=r!==p?r:b;const same=other>=0&&G.owner[other]===G.owner[p];m=same?.35:1.25;}
+  d[o]=clamp(c[0]*m+(edge?40:0),0,255);d[o+1]=clamp(c[1]*m+(edge?40:0),0,255);d[o+2]=clamp(c[2]*m+(edge?40:0),0,255);d[o+3]=255;}
+ ctx.putImageData(im,0,0);}
+// ---------- Game state ----------
+let G=null;
+function mkPerson(name,age,m,d,sex){const t=[];const n=RI(0,2);for(let i=0;i<n;i++){const tr=pick(TRAITS);if(!t.includes(tr))t.push(tr);}
+ let mm=m,dd=d,h=0;for(const tr of t){mm+=tr[2].m||0;dd+=tr[2].d||0;h+=tr[2].h||0;}
+ return{name,age,m:clamp(mm,0,8),d:clamp(dd,0,8),h,traits:t,sex:sex||'m'};}
+function newGame(pf){
+ G={year:-58,turn:0,player:pf,owner:PROV.map(p=>p.f),troops:PROV.map(p=>p.f==='rome'?RI(9,12):RI(4,7)),
+  gold:60+META.up.gold*40,fac:{},sel:-1,wins:0,peak:1,log:[],over:false};
+ for(const k in FAC){const F=FAC[k];G.fac[k]={ruler:mkPerson(F.r,F.age,F.m,F.d),spouse:null,kids:[],rel:{},allies:new Set(),alive:true,gold:30};}
+ // historical start: Aedui & Rome are friends, Sequani hired Ariovistus
+ for(const a in FAC)for(const b in FAC){G.fac[a].rel[b]=RI(-20,20);}
+ const ally=(a,b)=>{G.fac[a].allies.add(b);G.fac[b].allies.add(a);G.fac[a].rel[b]=G.fac[b].rel[a]=70;};
+ ally('aedui','rome');ally('sequani','suebi');ally('belgae','treveri');
+ for(const k in FAC){G.fac[k].rel.rome=Math.min(G.fac[k].rel.rome,k==='aedui'?70:-10);G.fac.rome.rel[k]=G.fac[k].rel.rome;}
+ for(const k in FAC)if(k!==pf){G.fac[pf].rel[k]+=META.up.diplo*10;G.fac[k].rel[pf]+=META.up.diplo*10;}
+ const home=PROV.findIndex(p=>p.f===pf);G.troops[home]=9;
+ if(pf==='arverni'){G.fac[pf].ruler.traits=[['Brave','⚔️',{}]];}
+ if(pf==='helvetii'){G.gold+=40;}
+ {const S=G.fac[pf],r=S.ruler;S.spouse=mkPerson(pick(NAMES_F),clamp(r.age-RI(2,6),18,44),2,2,'f');
+  const ka=clamp(r.age-22,0,24);if(ka>0){S.kids.push(mkPerson(pick(NAMES_M),ka,RI(2,4),RI(2,4),'m'));}}
+ paintRaster();hideScreens();updateHUD();
+ addLog(`${FAC[pf].r} of the ${FAC[pf].n} rises. ${G.fac[pf].ruler.age} years old. Rome watches.`);
+ toast(`🛡️ <b>58 BC.</b> Lead the ${FAC[pf].n}. Caesar holds the south.<br>👉 Tap your glowing land to begin.`);SFX.horn();saveGame();}
+function addLog(t){G.log.unshift(`<b>${yr()}</b> ${t}`);if(G.log.length>40)G.log.pop();}
+const yr=()=>G.year<0?`${-G.year} BC`:`AD ${G.year+1}`;
+const mine=f=>G.owner.map((o,i)=>o===f?i:-1).filter(i=>i>=0);
+// ---------- Rendering ----------
+const cv=$('map'),cx=cv.getContext('2d');let VW=0,VH=0,SC=1,OX=0,OY=0,DPR=1,shakeT=0,pulse=0;
+const parts=[];
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const r=cv.getBoundingClientRect();VW=r.width;VH=r.height;cv.width=VW*DPR;cv.height=VH*DPR;
+ const asp=GW/GH;if(VW/VH>asp){SC=VH*.96;OX=(VW-SC*asp)/2;OY=VH*.02;}else{SC=VW/asp*.98;OX=VW*.01;OY=(VH-SC)/2;}}
+const P2S=k=>({x:OX+PROV[k].x*SC*GW/GH,y:OY+PROV[k].y*SC});
+function spawn(x,y,c,n=14,sp=3){for(let i=0;i<n;i++){const a=R(0,6.28),v=R(.5,sp);parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1,l:1,c,s:R(1.5,4)});}}
+function floatTxt(x,y,t,c){const d=document.createElement('div');d.className='float';d.style.left=x+'px';d.style.top=y+'px';d.style.color=c;d.textContent=t;$('fx').appendChild(d);setTimeout(()=>d.remove(),1300);}
+function shake(){const m=$('mapbox');m.classList.remove('shake');void m.offsetWidth;m.classList.add('shake');if(navigator.vibrate)navigator.vibrate(40);}
+function draw(){
+ requestAnimationFrame(draw);pulse+=.05;
+ cx.setTransform(DPR,0,0,DPR,0,0);cx.clearRect(0,0,VW,VH);if(!G)return;
+ const mw=SC*GW/GH,mh=SC;
+ cx.save();cx.shadowColor='#7c3aed';cx.shadowBlur=22;cx.imageSmoothingEnabled=true;cx.drawImage(offc,OX,OY,mw,mh);cx.restore();
+ // sea crossings
+ cx.setLineDash([4,5]);cx.strokeStyle='#ffffff55';cx.lineWidth=1.5;
+ for(const[a,b]of EXTRA_ADJ){const A=P2S(a),B=P2S(b);cx.beginPath();cx.moveTo(A.x,A.y);cx.lineTo(B.x,B.y);cx.stroke();}cx.setLineDash([]);
+ // targets
+ if(G.sel>=0){const S=P2S(G.sel);for(const n of ADJ[G.sel]){if(G.owner[n]===G.player)continue;const N=P2S(n);
+  cx.strokeStyle=`rgba(255,80,60,${.5+.4*Math.sin(pulse*3)})`;cx.lineWidth=3;cx.beginPath();cx.moveTo(S.x,S.y);cx.lineTo(N.x,N.y);cx.stroke();
+  cx.beginPath();cx.arc(N.x,N.y,20+3*Math.sin(pulse*3),0,6.28);cx.stroke();}
+  cx.strokeStyle='#fff';cx.lineWidth=3;cx.shadowColor='#fff';cx.shadowBlur=16;cx.beginPath();cx.arc(S.x,S.y,22,0,6.28);cx.stroke();cx.shadowBlur=0;}
+ // tokens
+ const fs=clamp(SC/22,12,22);
+ for(let k=0;k<PROV.length;k++){const p=P2S(k),own=G.owner[k],c=FAC[own].c;
+  cx.fillStyle='#000a';cx.beginPath();cx.arc(p.x,p.y,fs*.95,0,6.28);cx.fill();
+  cx.strokeStyle=c;cx.lineWidth=2;if(own===G.player){cx.shadowColor=c;cx.shadowBlur=12+6*Math.sin(pulse*2);}cx.stroke();cx.shadowBlur=0;
+  cx.font=`${fs}px serif`;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(own==='rome'?'🦅':PROV[k].e,p.x,p.y-1);
+  cx.font=`800 ${fs*.7}px system-ui`;cx.fillStyle='#fff';cx.strokeStyle='#000';cx.lineWidth=3;
+  cx.strokeText(G.troops[k],p.x+fs*.85,p.y+fs*.7);cx.fillText(G.troops[k],p.x+fs*.85,p.y+fs*.7);
+  cx.font=`600 ${fs*.5}px system-ui`;cx.fillStyle='#ffffffcc';cx.strokeText(PROV[k].n,p.x,p.y-fs*1.35);cx.fillText(PROV[k].n,p.x,p.y-fs*1.35);}
+ // particles
+ for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.x+=q.vx;q.y+=q.vy;q.vy+=.05;q.l-=.02;if(q.l<=0){parts.splice(i,1);continue;}
+  cx.globalAlpha=q.l;cx.fillStyle=q.c;cx.shadowColor=q.c;cx.shadowBlur=10;cx.beginPath();cx.arc(q.x,q.y,q.s*q.l,0,6.28);cx.fill();}
+ cx.globalAlpha=1;cx.shadowBlur=0;}
+// background embers
+const bg=$('bgfx'),bx=bg.getContext('2d'),emb=[];
+function bgLoop(){requestAnimationFrame(bgLoop);bg.width=innerWidth;bg.height=innerHeight;const on=!document.querySelector('.screen:not(.off)');if(on)return;
+ if(emb.length<60)emb.push({x:R(0,bg.width),y:bg.height+10,v:R(.3,1.2),s:R(1,3),h:pick(['#f97316','#fbbf24','#ec4899','#a78bfa'])});
+ for(const e of emb){e.y-=e.v;e.x+=Math.sin(e.y/40)*.4;if(e.y<-10){e.y=bg.height+10;e.x=R(0,bg.width);}bx.fillStyle=e.h;bx.shadowColor=e.h;bx.shadowBlur=12;bx.globalAlpha=.7;bx.beginPath();bx.arc(e.x,e.y,e.s,0,6.28);bx.fill();}}
+// ---------- Input ----------
+cv.addEventListener('pointerdown',e=>{if(!G||G.over)return;ac();const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+ let best=-1,bd=1e9;for(let k=0;k<PROV.length;k++){const p=P2S(k),d=(p.x-x)**2+(p.y-y)**2;if(d<bd){bd=d;best=k;}}
+ if(bd>(SC/7)**2){G.sel=-1;info();return;}
+ const k=best;
+ if(G.sel>=0&&k!==G.sel&&G.owner[k]!==G.player&&ADJ[G.sel].includes(k)){tryAttack(G.sel,k);return;}
+ G.sel=(G.owner[k]===G.player)?k:-1;SFX.sel();info(k);});
+function strength(f){const r=G.fac[f].ruler;let s=1+r.m*.06;if(f===G.player)s*=1+META.up.war*.08;if(f==='rome')s*=1+G.turn*.01;return s;}
+function info(k){const el=$('info');if(k===undefined||k<0){el.classList.add('hide');return;}
+ const o=G.owner[k],F=FAC[o],me=o===G.player,rel=me?'':` · Relation ${G.fac[G.player].rel[o]|0}${G.fac[G.player].allies.has(o)?' · 🤝 Ally':''}`;
+ el.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:${F.c}"></span><b>${PROV[k].n}</b><span style="opacity:.7">${F.n} · ${G.troops[k]} warriors${rel}</span></div>`+
+ (me?`<div style="opacity:.75;margin-top:4px">Tap a glowing neighbour to attack.</div><button onclick="recruit(${k},3)">⚔️ Recruit 3 (15💰)</button> <button onclick="recruit(${k},10)">Recruit 10 (45💰)</button>`:`<div style="opacity:.75;margin-top:4px">Ruler: ${G.fac[o].ruler.name}, age ${G.fac[o].ruler.age}</div>`);
+ el.classList.remove('hide');}
+function recruit(k,n){const cost=n===3?15:45;if(G.gold<cost){toast('Not enough gold 💰');SFX.lose();return;}G.gold-=cost;G.troops[k]+=n;const p=P2S(k);floatTxt(p.x,p.y-20,'+'+n+' ⚔️','#4ade80');spawn(p.x,p.y,'#4ade80',10);SFX.coin();updateHUD();info(k);}
+function battle(a,d){
+ const af=G.owner[a],df=G.owner[d],send=G.troops[a]-1;if(send<1)return null;
+ const A=send*strength(af)*R(.75,1.25),D=G.troops[d]*strength(df)*(df===G.player?1.3:1.15)*R(.75,1.25);
+ const win=A>D;let aLoss,dLoss;
+ if(win){dLoss=G.troops[d];aLoss=Math.min(send-1,Math.round(send*D/A*.7));}else{aLoss=send;dLoss=Math.min(G.troops[d]-1,Math.round(G.troops[d]*A/D*.7));}
+ aLoss=Math.max(0,aLoss);dLoss=Math.max(0,dLoss);
+ G.troops[a]-=send;G.troops[d]-=dLoss;
+ if(win){G.owner[d]=af;G.troops[d]=Math.max(1,send-aLoss);}else{G.troops[a]+=send-aLoss;}
+ if(G.troops[a]<1)G.troops[a]=1;
+ const pa=P2S(a),pd=P2S(d);
+ for(let i=0;i<20;i++)parts.push({x:pa.x,y:pa.y,vx:(pd.x-pa.x)/50+R(-.5,.5),vy:(pd.y-pa.y)/50+R(-.5,.5),l:1,c:FAC[af].c,s:R(2,4)});
+ setTimeout(()=>{spawn(pd.x,pd.y,win?FAC[af].c:'#fff',26,4);floatTxt(pd.x,pd.y-10,'-'+dLoss,'#f87171');if(aLoss)floatTxt(pa.x,pa.y-10,'-'+aLoss,'#fca5a5');},350);
+ if(win){G.fac[df].rel[af]-=30;G.fac[df].allies.delete(af);G.fac[af].allies.delete(df);}
+ return{win,af,df};}
+function tryAttack(a,d){
+ if(G.troops[a]<2){toast('You need at least 2 warriors to attack.');return;}
+ const df=G.owner[d];
+ if(G.fac[G.player].allies.has(df)){if(!G.betrayOK){openModal(`<h2>🗡️ Betray the ${FAC[df].n}?</h2><p class="sub" style="margin:8px 0 14px">They are your allies. Every tribe will trust you less.</p><button style="width:100%" onclick="G.betrayOK=1;closeModal();tryAttack(${a},${d})">Betray and attack</button><button class="ghost" style="width:100%;margin-top:8px" onclick="closeModal()">Stay loyal</button>`);return;}
+  G.betrayOK=0;G.fac[G.player].allies.delete(df);G.fac[df].allies.delete(G.player);for(const k in FAC)G.fac[k].rel[G.player]-=15;addLog(`You betrayed the ${FAC[df].n}!`);}
+ SFX.hit();shake();const r=battle(a,d);if(!r)return;
+ if(r.win){G.wins++;SFX.win();addLog(`Your warriors took ${PROV[d].n} from the ${FAC[r.df].n}.`);if(Math.random()<.12)woundRuler(G.player);}
+ else{SFX.lose();addLog(`The attack on ${PROV[d].n} failed.`);}
+ G.sel=-1;info();checkDead(r.df);paintRaster();updateHUD();checkEnd();}
+// ---------- Dynasty ----------
+function woundRuler(f){const r=G.fac[f].ruler;r.h-=1;if(f===G.player)toast(`🩸 ${r.name} was wounded in battle.`);}
+function deathChance(f){const r=G.fac[f].ruler;let c=Math.max(0,r.age-38)*.007+.01-r.h*.01;if(f===G.player){c-=META.up.health*.008;if(G.turn<3)return 0;}return clamp(c,.003,.6);}
+function succeed(f){const S=G.fac[f],old=S.ruler;
+ const kids=S.kids.slice().sort((a,b)=>b.age-a.age);
+ if(!kids.length){if(f===G.player)return false;S.ruler=mkPerson(pick(NAMES_M),RI(25,45),RI(1,4),RI(1,4));S.spouse=null;S.kids=[];return true;}
+ const h=kids[0];S.kids=S.kids.filter(k=>k!==h);
+ h.m=clamp(h.m+(old.m>4?1:0),0,8);S.ruler=h;S.spouse=null;
+ if(f===G.player){for(const k in FAC)if(k!==f)S.rel[k]=G.fac[k].rel[f]=(G.fac[k].rel[f]*.7)|0;}
+ return true;}
+function rulerDies(f,why){const S=G.fac[f],old=S.ruler;
+ if(f===G.player){SFX.bell();
+  if(!succeed(f)){G.deathMsg=`${old.name} died ${why} at ${old.age} with no heir. The bloodline ends.`;return false;}
+  const h=S.ruler;toast(`⚱️ <b>${old.name}</b> died ${why} at ${old.age}.<br>👑 Long live <b>${h.name}</b>, age ${h.age}${h.age<16?' (a regent rules for now)':''}.`);
+  addLog(`${old.name} died ${why}. ${h.name} now rules.`);G.dynGen=(G.dynGen||1)+1;}
+ else{succeed(f);if(G.owner.includes(f))addLog(`${old.name} of the ${FAC[f].n} died. ${G.fac[f].ruler.name} rules now.`);}
+ return true;}
+function yearDynasty(f){const S=G.fac[f];S.ruler.age++;if(S.spouse)S.spouse.age++;for(const k of S.kids)k.age++;
+ if(S.spouse&&S.kids.length<6&&S.spouse.age<44){let c=.28;if(f===G.player)c+=META.up.fert*.08;
+  if(Math.random()<c){const sex=Math.random()<.5?'m':'f';const kid=mkPerson(pick(sex==='m'?NAMES_M:NAMES_F),0,RI(1,4),RI(1,4),sex);S.kids.push(kid);
+   if(f===G.player){toast(`👶 A ${sex==='m'?'son':'daughter'}, <b>${kid.name}</b>, is born!`);SFX.bell();addLog(`${kid.name} was born.`);}}}
+ if(Math.random()<deathChance(f))return rulerDies(f,pick(['of old age','of a fever','in a hunting accident','in their sleep']));
+ return true;}
+function marry(f){const me=G.fac[G.player];if(me.spouse){toast('Your ruler is already married.');return;}
+ if(G.gold<30){toast('A bride-price costs 30💰.');return;}
+ const rel=G.fac[f].rel[G.player];const ch=clamp(.35+rel/100+me.ruler.d*.05,0.05,.95);G.gold-=30;
+ if(Math.random()<ch){me.spouse=mkPerson(pick(NAMES_F)+' of the '+FAC[f].n,clamp(me.ruler.age-RI(0,8),16,40),RI(1,4),RI(1,4),'f');
+  G.fac[f].rel[G.player]+=25;me.rel[f]+=25;SFX.bell();spawnHearts();toast(`💍 ${me.ruler.name} weds ${me.spouse.name}!`);addLog(`Married into the ${FAC[f].n}.`);}
+ else{SFX.lose();toast(`The ${FAC[f].n} refused the marriage.`);}
+ updateHUD();openDip();}
+function spawnHearts(){for(let i=0;i<20;i++)setTimeout(()=>floatTxt(R(20,VW-20),R(VH*.3,VH*.8),pick(['💖','💍','✨']),'#f472b6'),i*60);}
+function openDyn(){SFX.tap();const S=G.fac[G.player],r=S.ruler;
+ const tr=p=>p.traits.map(t=>t[1]+' '+t[0]).join(', ')||'No notable traits';
+ let h=`<h2>👑 House of ${FAC[G.player].r}</h2><div style="opacity:.7;font-size:12px;margin-bottom:6px">Generation ${G.dynGen||1} · Death risk this year ≈ ${(deathChance(G.player)*100)|0}%</div>
+ <div class="row"><span class="emo">🧔</span><div class="grow"><b>${r.name}</b> (ruler), age ${r.age}<br><span style="opacity:.7">⚔️ Martial ${r.m} · 🕊️ Diplomacy ${r.d} · ${tr(r)}</span></div></div>
+ <div class="row"><span class="emo">${S.spouse?'👸':'💔'}</span><div class="grow">${S.spouse?`<b>${S.spouse.name}</b>, age ${S.spouse.age}`:'Unmarried. Arrange a marriage in Diplomacy.'}</div></div>`;
+ if(!S.kids.length)h+=`<div class="row"><span class="emo">⚠️</span><div class="grow">No heirs! If ${r.name} dies, your dynasty ends.</div></div>`;
+ S.kids.slice().sort((a,b)=>b.age-a.age).forEach((k,i)=>h+=`<div class="row"><span class="emo">${k.sex==='m'?'👦':'👧'}</span><div class="grow"><b>${k.name}</b>${i===0?' · 🌟 Heir':''}, age ${k.age}<br><span style="opacity:.7">⚔️ ${k.m} · 🕊️ ${k.d} · ${tr(k)}</span></div></div>`);
+ h+=`<h2 style="margin-top:12px;font-size:18px">📜 Chronicle</h2><div style="font-size:12px;opacity:.85;line-height:1.6;text-align:left">${G.log.slice(0,12).join('<br>')}</div><button class="ghost" style="width:100%;margin-top:10px" onclick="closeModal()">Close</button>`;
+ openModal(h);}
+// ---------- Diplomacy ----------
+function liveFacs(){return Object.keys(FAC).filter(k=>k!==G.player&&G.owner.includes(k));}
+function openDip(){SFX.tap();const me=G.fac[G.player];let h=`<h2>🤝 Diplomacy</h2><div style="opacity:.7;font-size:12px;margin-bottom:6px">Gold: ${G.gold}💰 · Gift 25💰 · Marriage 30💰 · Alliance needs relation 40+</div>`;
+ for(const f of liveFacs()){const rel=me.rel[f]|0,al=me.allies.has(f);const mood=rel>40?'😊':rel>0?'😐':rel>-40?'😠':'🤬';
+  h+=`<div class="row"><span class="dot" style="background:${FAC[f].c}"></span><div class="grow"><b>${FAC[f].n}</b> ${al?'🤝':''}<br><span style="opacity:.7">${G.fac[f].ruler.name} · ${mood} ${rel} · ${mine(f).length} lands</span></div>
+  <button class="ghost" onclick="gift('${f}')">🎁</button>${f==='rome'?'':`<button class="ghost" onclick="marry('${f}')">💍</button>`}${al?`<button class="ghost" onclick="breakAl('${f}')">✂️</button>`:`<button onclick="propose('${f}')">🤝</button>`}</div>`;}
+ h+=`<button class="ghost" style="width:100%;margin-top:10px" onclick="closeModal()">Close</button>`;openModal(h);}
+function gift(f){if(G.gold<25){toast('Not enough gold.');return;}G.gold-=25;const g=15+G.fac[G.player].ruler.d*2;G.fac[G.player].rel[f]+=g;G.fac[f].rel[G.player]+=g;SFX.coin();toast(`🎁 The ${FAC[f].n} liked your gift (+${g}).`);updateHUD();openDip();}
+function propose(f){const rel=G.fac[f].rel[G.player];if(f==='rome'&&G.turn<3){toast('Caesar does not ally with barbarians... yet.');return;}
+ if(rel<40){SFX.lose();toast(`The ${FAC[f].n} don't trust you enough (need 40).`);return;}
+ G.fac[f].allies.add(G.player);G.fac[G.player].allies.add(f);SFX.win();toast(`🤝 Alliance sealed with the ${FAC[f].n}!`);addLog(`Allied with the ${FAC[f].n}.`);openDip();}
+function breakAl(f){G.fac[f].allies.delete(G.player);G.fac[G.player].allies.delete(f);G.fac[f].rel[G.player]-=25;SFX.lose();openDip();}
+// ---------- AI & year ----------
+function aiTurn(f){if(!G.owner.includes(f))return;const S=G.fac[f];
+ const aggr=(f==='rome'?.2+G.turn*.02:.12+G.turn*.008)*(f===G.player?0:1);
+ for(const k of mine(f)){if(G.owner[k]!==f||G.troops[k]<3)continue;
+  const targets=ADJ[k].filter(n=>G.owner[n]!==f&&!S.allies.has(G.owner[n]));if(!targets.length)continue;
+  targets.sort((a,b)=>G.troops[a]-G.troops[b]);const t=targets[0];const tf=G.owner[t];
+  let want=aggr*(G.troops[k]/(G.troops[t]+1));if(tf===G.player)want*=1.1-(S.rel[G.player]/150);
+  if(Math.random()<want*.5){const isMe=tf===G.player;const r=battle(k,t);if(!r)continue;
+   if(isMe){SFX.hit();shake();addLog(r.win?`💥 The ${FAC[f].n} seized ${PROV[t].n}!`:`🛡️ You held ${PROV[t].n} against the ${FAC[f].n}.`);if(r.win)toast(`💥 The ${FAC[f].n} took <b>${PROV[t].n}</b>!`);}
+   checkDead(tf);}}}
+function checkDead(f){if(f!==G.player&&!G.owner.includes(f)&&G.fac[f].alive){G.fac[f].alive=false;addLog(`The ${FAC[f].n} are no more.`);if(f!=='rome')toast(`☠️ The ${FAC[f].n} have been wiped out.`);}}
+const EVENTS=[
+ [()=>{const g=RI(25,50);G.gold+=g;return`🌾 Bountiful harvest! +${g}💰`;}],
+ [()=>{const m=mine(G.player);const k=pick(m);const l=Math.ceil(G.troops[k]/3);G.troops[k]=Math.max(1,G.troops[k]-l);return`🦠 Plague in ${PROV[k].n}. ${l} warriors lost.`;}],
+ [()=>{G.fac[G.player].ruler.m=Math.min(8,G.fac[G.player].ruler.m+1);return`🔮 The druids foresee victory. +1 Martial.`;}],
+ [()=>{const k=pick(mine(G.player));G.troops[k]+=4;return`🪓 Warriors flock to your banner in ${PROV[k].n}. +4`;}],
+ [()=>{const g=Math.min(G.gold,RI(15,35));G.gold-=g;return`🏴 Raiders looted your stores. -${g}💰`;}],
+ [()=>{G.fac[G.player].ruler.h+=1;return`🌿 A healer's tonic strengthens your ruler.`;}],
+ [()=>{for(const k in FAC)G.fac[k].rel.rome-=10;return`📯 News of Roman cruelty spreads. All tribes hate Rome more.`;}],
+ [()=>{const t=pick(liveFacs());if(!t)return'';G.fac[t].rel[G.player]+=20;return`🍻 A great feast with the ${FAC[t].n}. +20 relations.`;}]];
+// Caesar's real campaign order (Gallic Wars) drives Rome's early targets
+const CAESAR={'-58':['helvetii','suebi'],'-57':['belgae','eburones'],'-56':['veneti','aquitani'],'-55':['suebi','catu'],'-54':['eburones','treveri'],'-53':['eburones','carnutes'],'-52':['arverni','aedui']};
+const HIST={'-58':'Caesar marches north. The Helvetii and the Suebi are his first targets.','-57':'Caesar turns on the Belgic tribes.','-56':'Roman ships sail against the Veneti of Armorica.','-55':'Caesar crosses the Rhine and the Channel.','-54':'Ambiorix leads the Eburones in revolt.','-52':'All of Gaul rises. Rome marches on Gergovia.'};
+function romeSurge(){if(!G.owner.includes('rome'))return;
+ const base=(G.turn%2===0?1:0)+Math.floor(G.turn/5);const rk=mine('rome');for(const k of rk)G.troops[k]+=base;
+ const tg=CAESAR[String(G.year)]||[];
+ for(const f of tg){const near=rk.filter(k=>ADJ[k].some(n=>G.owner[n]===f));for(const k of near)G.troops[k]+=2+Math.floor(G.turn/3);}
+ if(HIST[String(G.year)])setTimeout(()=>toast(`📜 <b>${yr()}:</b> ${HIST[String(G.year)]}`),900);}
+function endYear(){if(G.over)return;ac();SFX.horn();G.sel=-1;info();
+ const bEnd=$('bEnd');bEnd.disabled=true;
+ // income
+ const my=mine(G.player);const inc=my.length*8+G.fac[G.player].ruler.d*2;G.gold+=inc;
+ for(const k of my)G.troops[k]+=1;
+ for(const k in FAC)if(k!==G.player)for(const p of mine(k))if(Math.random()<.6)G.troops[p]+=1;
+ const hp=P2S(my[0]||0);floatTxt(hp.x,hp.y-30,'+'+inc+'💰','#fde047');SFX.coin();
+ romeSurge();
+ const order=Object.keys(FAC).filter(f=>f!==G.player).sort(()=>Math.random()-.5);
+ let i=0;const step=()=>{if(i<order.length){aiTurn(order[i++]);paintRaster();setTimeout(step,70);return;}
+  if(!mine(G.player).length){paintRaster();updateHUD();bEnd.disabled=false;checkEnd();return;}
+  // dynasties
+  for(const f in FAC){if(!G.owner.includes(f))continue;if(!yearDynasty(f)){gameOver(false);return;}}
+  // AI diplomacy drift
+  for(const f of liveFacs()){G.fac[f].rel[G.player]+=Math.sign(-G.fac[f].rel[G.player]);G.fac[G.player].rel[f]=G.fac[f].rel[G.player];}
+  if(Math.random()<.45){const ev=pick(EVENTS)[0]();if(ev){toast(ev);addLog(ev);}}
+  G.year++;if(G.year===0)G.year=1;G.turn++;{const yb=document.createElement('div');yb.id='yb';yb.textContent=yr();document.body.appendChild(yb);setTimeout(()=>yb.remove(),1700);tone(196,.5,'triangle',.05);tone(294,.6,'triangle',.04,0,.12);}
+  G.peak=Math.max(G.peak,mine(G.player).length);saveGame();
+  paintRaster();updateHUD();bEnd.disabled=false;checkEnd();};
+ setTimeout(step,250);}
+function score(){return G.turn*10+G.peak*60+mine(G.player).length*40+G.wins*15+(G.dynGen||1)*50;}
+function updateHUD(){if(!G)return;const r=G.fac[G.player].ruler;
+ $('hYear').textContent='📅 '+yr();$('hGold').textContent='💰 '+G.gold;$('hProv').textContent=`🗺️ ${mine(G.player).length}/${PROV.length}`;
+ $('hRuler').innerHTML=`<span style="color:${FAC[G.player].c}">●</span> ${r.name} (${r.age})`;}
+function checkEnd(){if(G.over)return;const n=mine(G.player).length;
+ if(n===0){G.deathMsg='Your last stronghold has fallen. Your people are scattered.';gameOver(false);}
+ else if(n===PROV.length)gameOver(true);}
+function gameOver(won){G.over=true;localStorage.removeItem(RUN_KEY);refreshMenu();closeModal();const s=score()+(won?1000:0);const leg=Math.floor(s/25);
+ META.legacy+=leg;const nh=s>META.high;if(nh)META.high=s;saveMeta();
+ $('oEmo').textContent=won?'👑':'💀';$('oTitle').textContent=won?'High King of Gaul':'Dynasty Fallen';
+ $('oText').textContent=won?`In ${yr()} every tribe kneels to the ${FAC[G.player].n}. Even Rome is driven out.`:(G.deathMsg||'Your reign is over.')+` You lasted ${G.turn} years.`;
+ $('oScore').textContent=`${nh?'🏆 NEW HIGH SCORE! ':'Score: '}${s}`;$('oLeg').textContent=`+${leg} legacy points ✨ · Best: ${META.high}`;
+ won?SFX.win():SFX.lose();Music.stop();setTimeout(()=>show('sOver'),900);}
+// ---------- Procedural Celtic soundtrack (D Dorian, drone + whistle + bodhrán) ----------
+const Music={on:false,t:0,id:null,master:null,
+ start(){const c=ac();if(!c||this.on)return;this.on=true;this.master=c.createGain();this.master.gain.value=.0001;this.master.gain.exponentialRampToValueAtTime(.5,c.currentTime+2);
+  const rv=c.createConvolver(),len=c.sampleRate*2,b=c.createBuffer(2,len,c.sampleRate);for(let ch=0;ch<2;ch++){const a=b.getChannelData(ch);for(let i=0;i<len;i++)a[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}rv.buffer=b;
+  this.wet=c.createGain();this.wet.gain.value=.35;this.master.connect(OUT());this.master.connect(rv);rv.connect(this.wet).connect(OUT());
+  // drone
+  this.drone=[73.4,110].map(f=>{const o=c.createOscillator(),g=c.createGain(),lf=c.createOscillator(),lg=c.createGain();o.type='sawtooth';o.frequency.value=f;const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=500;
+   lf.frequency.value=.15;lg.gain.value=150;lf.connect(lg).connect(fl.frequency);g.gain.value=.035;o.connect(fl).connect(g).connect(this.master);o.start();lf.start();return o;});
+  this.next=c.currentTime+.1;this.step=0;this.id=setInterval(()=>this.sched(),100);},
+ note(f,t,d,type,v){const c=AC,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+  if(type==='sine'){const vib=c.createOscillator(),vg=c.createGain();vib.frequency.value=5.5;vg.gain.value=f*.012;vib.connect(vg).connect(o.frequency);vib.start(t);vib.stop(t+d);}
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(this.master);o.start(t);o.stop(t+d+.05);},
+ drum(t,v){const c=AC,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(45,t+.2);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(g).connect(this.master);o.start(t);o.stop(t+.3);},
+ sched(){const c=AC;const scale=[293.7,329.6,349.2,392,440,493.9,523.3,587.3,659.3];const beat=.22;
+  while(this.next<c.currentTime+.3){const s=this.step%48,t=this.next;
+   const tense=G&&!G.over&&G.owner.filter(o=>o==='rome').length>4;
+   if(s%6===0)this.drum(t,.35);else if(s%3===0)this.drum(t,.15);else if(tense&&s%2)this.drum(t,.07);
+   if(s%3===0||Math.random()<.35){if(!this.mi)this.mi=4;this.mi=clamp(this.mi+RI(-2,2),0,scale.length-1);
+    this.note(scale[this.mi]*(tense?.5:1)*(s<24?1:1.0),t,beat*R(1.2,2.6),'sine',.05);}
+   if(s%12===0)this.note(scale[[0,3,4,0][(s/12)|0]]/2,t,beat*11,'triangle',.04);
+   this.next+=beat;this.step++;}},
+ stop(){if(!this.on)return;this.on=false;clearInterval(this.id);const c=AC;try{this.master.gain.exponentialRampToValueAtTime(.0001,c.currentTime+1.5);const d=this.drone;setTimeout(()=>d.forEach(o=>o.stop()),1600);}catch(e){}}};
+// ---------- Campaign save / continue ----------
+const RUN_KEY='torcs_run_v1';let MUTED=localStorage.getItem('torcs_mute')==='1';
+function saveGame(){if(!G||G.over)return;const fac={};for(const k in G.fac){fac[k]=Object.assign({},G.fac[k],{allies:[...G.fac[k].allies]});}
+ localStorage.setItem(RUN_KEY,JSON.stringify(Object.assign({},G,{fac,sel:-1})));}
+function continueGame(){const d=JSON.parse(localStorage.getItem(RUN_KEY)||'null');if(!d)return;ac();
+ for(const k in d.fac)d.fac[k].allies=new Set(d.fac[k].allies);G=d;paintRaster();hideScreens();updateHUD();Music.start();SFX.horn();toast(`▶️ Welcome back. It is ${yr()}.`);}
+function refreshMenu(){$('mCont').style.display=localStorage.getItem(RUN_KEY)?'block':'none';$('mHigh').textContent=`🏆 High score: ${META.high} · ✨ ${META.legacy} legacy`;}
+function quitToMenu(){saveGame();closeModal();Music.stop();refreshMenu();show('sMenu');}
+function toggleMute(){MUTED=!MUTED;localStorage.setItem('torcs_mute',MUTED?'1':'0');applyMute();}
+function applyMute(){$('hMute').textContent=MUTED?'🔇':'🔊';if(AC){if(!MASTER){MASTER=AC.createGain();MASTER.connect(AC.destination);}MASTER.gain.value=MUTED?0:1;}}
+// ---------- Menus ----------
+function openPick(){SFX.tap();const box=$('pickCards');box.innerHTML='';
+ for(const k of Object.keys(FAC).filter(k=>FAC[k].play)){const F=FAC[k],home=PROV.find(p=>p.f===k);const d=document.createElement('div');d.className='card';d.style.borderColor=F.c+'88';d.style.boxShadow=`0 0 22px ${F.c}33`;
+  d.innerHTML=`<div class="emo">${home.e}</div><b style="color:${F.c}">${F.r}</b><div style="opacity:.8">of the ${F.n} · age ${F.age}</div><div style="margin:6px 0;opacity:.7">${F.blurb}</div>⚔️ ${F.m} · 🕊️ ${F.d}`;
+  d.onclick=()=>{ac();SFX.win();Music.start();newGame(k);};box.appendChild(d);}
+ show('sPick');}
+function openShop(){SFX.tap();$('shopPts').textContent=`✨ ${META.legacy} legacy points`;const L=$('shopList');L.innerHTML='';
+ for(const u of UPGRADES){const lv=META.up[u.k]||0,cost=upCost(lv),maxed=lv>=u.max;const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<b>${u.n}</b><div style="opacity:.75">${u.d}</div><div style="margin:6px 0">${'◆'.repeat(lv)}${'◇'.repeat(u.max-lv)}</div>`;
+  const b=document.createElement('button');b.textContent=maxed?'MAXED':`Buy · ${cost}✨`;b.disabled=maxed||META.legacy<cost;b.style.width='100%';
+  b.onclick=()=>{META.legacy-=cost;META.up[u.k]=lv+1;saveMeta();SFX.win();openShop();};d.appendChild(b);L.appendChild(d);}
+ show('sShop');}
+$('bDyn').onclick=openDyn;$('bDip').onclick=openDip;$('bEnd').onclick=endYear;
+window.addEventListener('resize',resize);
+buildRaster();resize();draw();bgLoop();
+refreshMenu();applyMute();
+</script></body></html>
