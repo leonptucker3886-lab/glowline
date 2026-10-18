@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glowline — Casino + Arcade</title>
+<style>
+:root{--bg:#07060f;--fg:#f4f2ff;--mut:#9a95c0;--a:#ff3df2;--b:#3df2ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#2a0f4a,var(--bg) 60%);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+.logo{font-weight:900;font-size:28px;letter-spacing:1px;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
+.wallet{border:1px solid #ffffff22;border-radius:999px;padding:8px 16px;font-weight:700}
+nav{display:flex;gap:8px;padding:0 22px}nav button{flex:1;padding:14px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff0a;color:var(--fg);font-size:16px;font-weight:700;cursor:pointer}
+nav button.on{background:linear-gradient(90deg,#ff3df233,#3df2ff33);border-color:var(--b)}
+main{padding:22px}iframe{width:100%;height:calc(100vh - 170px);border:0;border-radius:16px;background:#000}
+</style></head><body>
+<header><div class="logo">GLOWLINE</div><div class="wallet">✦ <span id="glow">—</span> Glow</div></header>
+<nav><button id="t-casino" class="on" onclick="go('casino')">Casino</button><button id="t-arcade" onclick="go('arcade')">Arcade</button><button id="t-lb" onclick="go('lb')">Leaderboards</button></nav>
+<main><iframe id="f" title="Glowline game"></iframe></main>
+<script>
+const SRC={casino:'https://afterglow.leonlink.net/',arcade:'https://arcadeline.leonlink.net/',lb:'https://arcadeline.leonlink.net/#leaderboard'};
+function go(t){document.getElementById('f').src=SRC[t];for(const k in SRC)document.getElementById('t-'+k).classList.toggle('on',k===t);location.hash=t}
+go((location.hash||'#casino').slice(1) in SRC?(location.hash||'#casino').slice(1):'casino');
+</script></body></html>
