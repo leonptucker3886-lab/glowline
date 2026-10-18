@@ -39,6 +39,11 @@ footer{text-align:center;padding:24px;opacity:.5;font-size:.85rem}
 .bcard{display:block;padding:28px 20px;border-radius:18px;text-decoration:none;color:var(--txt);background:rgba(255,255,255,.04);box-shadow:0 0 0 1px var(--gold) inset;transition:transform .25s,box-shadow .25s}
 .bcard:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(255,210,90,.5),0 0 0 1px var(--gold) inset}
 .bcard h3{font-size:1.35rem;color:var(--gold);margin-bottom:6px}.bcard span{opacity:.6;font-size:.85rem}
+.bgrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;max-width:1200px;margin:0 auto}
+.bcard{aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:flex-end;padding:12px!important;border-radius:14px;min-height:0!important;background:linear-gradient(160deg,#2a0b45,#07060f 75%)!important;transition:transform .15s,box-shadow .15s}
+.bcard:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 0 18px rgba(255,210,90,.55)}
+.bcard h3{font-size:.95rem!important;margin:0 0 4px!important}.bcard span{font-size:.62rem!important;opacity:.7;word-break:break-all}
+@media(max-width:600px){.bgrid{grid-template-columns:repeat(3,1fr);gap:8px}.bcard h3{font-size:.8rem!important}}
 </style>
 </head>
 <body>
