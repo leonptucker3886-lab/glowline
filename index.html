@@ -1,21 +1,60 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glowline — Casino + Arcade</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glowline Casino</title>
 <style>
-:root{--bg:#07060f;--fg:#f4f2ff;--mut:#9a95c0;--a:#ff3df2;--b:#3df2ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#2a0f4a,var(--bg) 60%);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
-.logo{font-weight:900;font-size:28px;letter-spacing:1px;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
-.wallet{border:1px solid #ffffff22;border-radius:999px;padding:8px 16px;font-weight:700}
-nav{display:flex;gap:8px;padding:0 22px}nav button{flex:1;padding:14px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff0a;color:var(--fg);font-size:16px;font-weight:700;cursor:pointer}
-nav button.on{background:linear-gradient(90deg,#ff3df233,#3df2ff33);border-color:var(--b)}
-main{padding:22px}iframe{width:100%;height:calc(100vh - 170px);border:0;border-radius:16px;background:#000}
-</style></head><body>
-<header><div class="logo">GLOWLINE</div><div class="wallet">✦ <span id="glow">—</span> Glow</div></header>
-<nav><button id="t-casino" class="on" onclick="go('casino')">Casino</button><button id="t-arcade" onclick="go('arcade')">Arcade</button><button id="t-lb" onclick="go('lb')">Leaderboards</button></nav>
-<main><iframe id="f" title="Glowline game"></iframe><div id="card" style="display:none;text-align:center;padding:60px 20px;border:1px solid #ffffff22;border-radius:16px;background:#ffffff08"><h2 style="margin:0 0 8px">Glowline Casino</h2><p style="color:var(--mut)">25+ slots, table and instant games. Play money only.</p><a href="https://afterglow.leonlink.net/" style="display:inline-block;margin-top:14px;padding:14px 28px;border-radius:999px;background:linear-gradient(90deg,var(--a),var(--b));color:#07060f;font-weight:800;text-decoration:none">Enter the Casino</a></div></main>
-<script>
-const SRC={casino:'https://afterglow.leonlink.net/',arcade:'https://arcadeline.leonlink.net/',lb:'https://arcadeline.leonlink.net/#leaderboard'};
-const NOFRAME={casino:1};
-function go(t){const f=document.getElementById('f'),c=document.getElementById('card');if(NOFRAME[t]){f.style.display='none';f.removeAttribute('src');c.style.display='block'}else{c.style.display='none';f.style.display='block';f.src=SRC[t]}for(const k in SRC)document.getElementById('t-'+k).classList.toggle('on',k===t);location.hash=t}
-go((location.hash||'#casino').slice(1) in SRC?(location.hash||'#casino').slice(1):'casino');
-</script></body></html>
+:root{--bg:#07060f;--glow:#ff3df2;--cyan:#22e6ff;--gold:#ffd25a;--txt:#f3eefe}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(ellipse at top,#2a0b45 0%,var(--bg) 60%);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(90deg,transparent 0 79px,rgba(34,230,255,.05) 80px),repeating-linear-gradient(0deg,transparent 0 79px,rgba(255,61,242,.05) 80px);pointer-events:none}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 5vw}
+.logo{font-weight:900;font-size:1.6rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(90deg,var(--glow),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(255,61,242,.6))}
+nav a{color:var(--txt);text-decoration:none;margin-left:22px;opacity:.8}nav a:hover{opacity:1;color:var(--cyan)}
+.hero{text-align:center;padding:9vh 5vw 5vh}
+.hero h1{font-size:clamp(2.6rem,8vw,6rem);font-weight:900;letter-spacing:.06em;text-shadow:0 0 18px var(--glow),0 0 42px rgba(255,61,242,.5);animation:flick 4s infinite}
+.hero p{margin-top:14px;font-size:1.15rem;opacity:.8}
+@keyframes flick{0%,92%,100%{opacity:1}93%{opacity:.6}95%{opacity:1}97%{opacity:.75}}
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;padding:3vh 5vw 8vh;max-width:1200px;margin:auto}
+.door{position:relative;display:block;padding:44px 32px;border-radius:22px;text-decoration:none;color:var(--txt);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);transition:transform .25s,box-shadow .25s}
+.door:hover{transform:translateY(-6px)}
+.casino{box-shadow:0 0 0 1px var(--glow) inset}.casino:hover{box-shadow:0 0 40px rgba(255,61,242,.55),0 0 0 1px var(--glow) inset}
+.arcade{box-shadow:0 0 0 1px var(--cyan) inset}.arcade:hover{box-shadow:0 0 40px rgba(34,230,255,.55),0 0 0 1px var(--cyan) inset}
+.door .tag{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+.door h2{font-size:2.2rem;margin:10px 0}
+.casino h2{color:var(--glow);text-shadow:0 0 14px var(--glow)}.arcade h2{color:var(--cyan);text-shadow:0 0 14px var(--cyan)}
+.door ul{list-style:none;margin:16px 0 26px;opacity:.85;line-height:1.8}
+.btn{display:inline-block;padding:12px 26px;border-radius:999px;font-weight:700;color:#07060f}
+.casino .btn{background:var(--glow)}.arcade .btn{background:var(--cyan)}
+.coins{text-align:center;padding:0 5vw 6vh;color:var(--gold);text-shadow:0 0 10px rgba(255,210,90,.5)}
+footer{text-align:center;padding:24px;opacity:.5;font-size:.85rem}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Glowline</div>
+  <nav><a href="https://afterglow.leonlink.net">Casino</a><a href="https://arcadeline.leonlink.net">Arcade</a><a href="https://leonlink.net">LeonLink</a></nav>
+</header>
+<section class="hero">
+  <h1>GLOWLINE CASINO</h1>
+  <p>One login. One Glow balance. Casino and arcade under the same neon.</p>
+</section>
+<section class="doors">
+  <a class="door casino" href="https://afterglow.leonlink.net">
+    <div class="tag">Casino floor</div>
+    <h2>Casino</h2>
+    <ul><li>Slots: Neon, Sun n Fun, Zeus and more</li><li>Table games and mines</li><li>Glow store and wallet</li></ul>
+    <span class="btn">Enter the casino</span>
+  </a>
+  <a class="door arcade" href="https://arcadeline.leonlink.net">
+    <div class="tag">Arcade</div>
+    <h2>Arcade</h2>
+    <ul><li>Skill and arcade games</li><li>Your player dashboard</li><li>Leaderboards and progress</li></ul>
+    <span class="btn">Enter the arcade</span>
+  </a>
+</section>
+<p class="coins">Your Glow balance follows you everywhere you sign in.</p>
+<footer>&copy; Glowline Casino &middot; a LeonLink games property</footer>
+</body>
+</html>
