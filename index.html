@@ -16,7 +16,9 @@ nav a{color:var(--txt);text-decoration:none;margin-left:22px;opacity:.8}nav a:ho
 .hero h1{font-size:clamp(2.6rem,8vw,6rem);font-weight:900;letter-spacing:.06em;text-shadow:0 0 18px var(--glow),0 0 42px rgba(255,61,242,.5);animation:flick 4s infinite}
 .hero p{margin-top:14px;font-size:1.15rem;opacity:.8}
 @keyframes flick{0%,92%,100%{opacity:1}93%{opacity:.6}95%{opacity:1}97%{opacity:.75}}
-.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;padding:3vh 5vw 8vh;max-width:1200px;margin:auto}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;min-height:70vh}
+.doors .door{border-radius:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 4vw}
+@media(max-width:640px){.doors .door{padding:5vh 5vw}.door h2{font-size:1.6rem}.door ul{font-size:.9rem}}
 .door{position:relative;display:block;padding:44px 32px;border-radius:22px;text-decoration:none;color:var(--txt);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);transition:transform .25s,box-shadow .25s}
 .door:hover{transform:translateY(-6px)}
 .casino{box-shadow:0 0 0 1px var(--glow) inset}.casino:hover{box-shadow:0 0 40px rgba(255,61,242,.55),0 0 0 1px var(--glow) inset}
