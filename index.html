@@ -31,12 +31,19 @@ nav a{color:var(--txt);text-decoration:none;margin-left:22px;opacity:.8}nav a:ho
 .casino .btn{background:var(--glow)}.arcade .btn{background:var(--cyan)}
 .coins{text-align:center;padding:0 5vw 6vh;color:var(--gold);text-shadow:0 0 10px rgba(255,210,90,.5)}
 footer{text-align:center;padding:24px;opacity:.5;font-size:.85rem}
+.bangers{padding:7vh 5vw 4vh;text-align:center}
+.bangers h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:var(--gold);text-shadow:0 0 16px rgba(255,210,90,.7);letter-spacing:.06em}
+.bangers .sub{opacity:.75;margin:8px 0 28px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.bcard{display:block;padding:28px 20px;border-radius:18px;text-decoration:none;color:var(--txt);background:rgba(255,255,255,.04);box-shadow:0 0 0 1px var(--gold) inset;transition:transform .25s,box-shadow .25s}
+.bcard:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(255,210,90,.5),0 0 0 1px var(--gold) inset}
+.bcard h3{font-size:1.35rem;color:var(--gold);margin-bottom:6px}.bcard span{opacity:.6;font-size:.85rem}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">Glowline</div>
-  <nav><a href="https://afterglow.leonlink.net">Casino</a><a href="https://arcadeline.leonlink.net">Arcade</a><a href="https://leonlink.net">LeonLink</a></nav>
+  <nav><a href="https://afterglow.leonlink.net">Casino</a><a href="https://arcadeline.leonlink.net">Arcade</a><a href="#bangers">Original Bangers</a><a href="https://leonlink.net">LeonLink</a></nav>
 </header>
 <section class="hero">
   <p class="welcome" style="font-size:1.25rem;font-weight:700;letter-spacing:.08em;color:var(--cyan);text-shadow:0 0 12px var(--cyan);margin-bottom:12px">Welcome to the Glowline Station</p>
@@ -58,6 +65,7 @@ footer{text-align:center;padding:24px;opacity:.5;font-size:.85rem}
     <span class="btn">Enter the arcade</span>
   </a>
 </section>
+<section class="bangers" id="bangers"><h2>Original Bangers</h2><p class="sub">The rest of the LeonLink lineup</p><div class="bgrid"><a class="bcard" href="https://ashfall.leonlink.net"><h3>Ashfall</h3><span>ashfall.leonlink.net</span></a><a class="bcard" href="https://sporebound.leonlink.net"><h3>Sporebound</h3><span>sporebound.leonlink.net</span></a><a class="bcard" href="https://stopz.leonlink.net"><h3>Stop Z Fighting</h3><span>stopz.leonlink.net</span></a><a class="bcard" href="https://joustline.leonlink.net"><h3>Joustline</h3><span>joustline.leonlink.net</span></a></div></section>
 <p class="coins">Your Glow balance follows you everywhere you sign in.</p>
 <footer>&copy; Glowline &middot; a LeonLink games property</footer>
 </body>
