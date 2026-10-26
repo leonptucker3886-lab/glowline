@@ -78,4 +78,4 @@ $('drop').onclick=()=>{if(balls.length>=8)return;if(!spendGlow(bet)){say('Not en
 balls.push({path:Array.from({length:ROWS},()=>Math.random()<.5?0:1),t0:performance.now(),stake:bet,m:M[risk].slice(),x:W/2,y:0})};
 render();requestAnimationFrame(tick);
 
-</script></body></html>
+</script><script src="../shared/afterglow-polish.js" data-title="Pulse Plinko"></script></body></html>
